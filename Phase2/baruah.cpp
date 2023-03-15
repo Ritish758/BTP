@@ -76,7 +76,7 @@ int end_time = t.deadline;
          }
          
          if(ok){
-            cout<<close<<" "<<ma<<"normal \n";
+            //cout<<close<<" "<<ma<<"normal \n";
              if((ma - close) <= -0.000001){
                proc=j;
                close=ma;
@@ -105,7 +105,7 @@ int end_time=t.deadline;
 
 double requtil = (double)(t.process_time)/(double)(end_time-start_time);
 
-cout<<requtil<<"\n";
+//cout<<requtil<<"\n";
 
 int no=1000000;
 int bestproc=-1;
@@ -193,6 +193,8 @@ void schedule_greedy1(vector<Task>& tasks, int m){
  int dropsoft=0;
  int dis_hard = 0;
  int dis_soft = 0;
+ double sqrt_dis_hard = 0.0;
+ double sqrt_dis_soft = 0.0;
  double util_cost = 0.2*(double)m;
  
  
@@ -200,7 +202,7 @@ void schedule_greedy1(vector<Task>& tasks, int m){
  
  while(t<=mx){
  
- cout<<"t="<<t<<"\n";
+ //cout<<"t="<<t<<"\n";
  
  while(i<tasks.size() && tasks[i].arrival_time==t){intask.push_back(tasks[i]); i++; }
  
@@ -211,10 +213,10 @@ void schedule_greedy1(vector<Task>& tasks, int m){
     
     for(int j=0; j<processor[k].size(); j++){
        if(processor[k][j].start_time==t){
-          cout<<"Task "<<processor[k][j].tid<<" started at processor "<<k<<"\n";
+         // cout<<"Task "<<processor[k][j].tid<<" started at processor "<<k<<"\n";
        }
        else if(processor[k][j].end_time==t){
-        cout<<"Task "<<processor[k][j].tid<<" completed at processor "<<k<<"\n";
+        //cout<<"Task "<<processor[k][j].tid<<" completed at processor "<<k<<"\n";
         c1++;
         continue;
        }
@@ -231,7 +233,7 @@ void schedule_greedy1(vector<Task>& tasks, int m){
       if(x.process_time + t+1 > x.deadline){
          if(x.flag==0){drophard++;}
          else{dropsoft++;}
-         cout<<"Task "<<x.tid<<" Dropped\n";
+         //cout<<"Task "<<x.tid<<" Dropped\n";
          continue;
       }
       double utilisation = (x.process_time)/(x.deadline - t-1);
@@ -239,16 +241,18 @@ void schedule_greedy1(vector<Task>& tasks, int m){
       int sch_time = 0;
       int proc = bestmatch(t,x,util);
       if(proc!=-1){
-         cout<<"Task "<<x.tid<<" assigned to processor "<<proc<<" with utilisation "<<x.utilisation<<"\n";
+         //cout<<"Task "<<x.tid<<" assigned to processor "<<proc<<" with utilisation "<<x.utilisation<<"\n";
          processor[proc].push_back(x);
          for(int j=x.start_time; j<=x.end_time; j++){
              util[proc][j] += x.utilisation;
          }
          if(x.flag==0){
            dis_hard += eu_calc_dis(x.x,x.y,proc);
+           sqrt_dis_hard += (double)(sqrtf(eu_calc_dis(x.x,x.y,proc)));
          }
          else{
            dis_soft += eu_calc_dis(x.x,x.y,proc);
+           sqrt_dis_soft += (double)(sqrtf(eu_calc_dis(x.x,x.y,proc)));
          }
       }
       else{
@@ -263,7 +267,7 @@ void schedule_greedy1(vector<Task>& tasks, int m){
               vector<Task> temp;
               for(int tsk=0; tsk<processor[proc].size(); tsk++){
                   if(dr.find(processor[proc][tsk].tid)!=dr.end()){
-                     cout<<"Task "<<processor[proc][tsk].tid<<" dropped hard-soft\n";
+                    // cout<<"Task "<<processor[proc][tsk].tid<<" dropped hard-soft\n";
                      dropsoft++;
                      for(int tm=t; tm<=processor[proc][tsk].end_time; tm++){
                          util[proc][tm]-= processor[proc][tsk].utilisation;
@@ -277,11 +281,12 @@ void schedule_greedy1(vector<Task>& tasks, int m){
               for(int tm=t+1; tm<=x.deadline; tm++){
                    util[proc][tm]+=x.utilisation;
               }
-              cout<<"Task "<<x.tid<<" assigned to processor "<<proc<<" with utilisation "<<x.utilisation<<"\n";
+             // cout<<"Task "<<x.tid<<" assigned to processor "<<proc<<" with utilisation "<<x.utilisation<<"\n";
               x.start_time=t+1;
               x.end_time=x.deadline;
               processor[proc].push_back(x);
               dis_hard += eu_calc_dis(x.x,x.y,proc);
+              sqrt_dis_hard += (double)(sqrtf(eu_calc_dis(x.x,x.y,proc)));
            }
         }
         else{
@@ -295,27 +300,29 @@ void schedule_greedy1(vector<Task>& tasks, int m){
  t++;
  
  for(int j=1; j<util.size(); j++){
-   cout<<util[j][t-1]<<" ";
+  // cout<<util[j][t-1]<<" ";
    util_cost += 0.8 * (util[j][t-1]) *(util[j][t-1]) * (util[j][t-1]);
  }
- cout<<"\n";
+ //cout<<"\n";
  
  }
  
   cout<<"Total Hard Task dropped - "<<drophard<<"\n";
   cout<<"Total Soft Task dropped - "<<dropsoft<<"\n";
-  cout<<"Hard Task distance - "<<dis_hard<<"\n";
-  cout<<"Soft Task distance - "<<dis_soft<<"\n";
+  cout<<"Hard Task distance - "<<dis_hard<<"  "<<sqrt_dis_hard<<"\n";
+  cout<<"Soft Task distance - "<<dis_soft<<"  "<<sqrt_dis_soft<<"\n";
   cout<<"Cost of utilisation - "<<fixed<<setprecision(5)<<util_cost<<"\n";
   
-  cout<<c1<<"\n";
+  cout<<"Number of Completed Tasks - "<<c1<<"\n";
   
   cout<<"\n\n\n";
   
   cout<<drophard*100+dropsoft<<"\n";
-  double final_cost = ((double)drophard*0.9 + (double)dropsoft*0.1)/(double)(c1+drophard+dropsoft);
-  final_cost += ((double)(dis_hard + dis_soft) / (double)(200*2*200)) /(double)(c1+drophard+dropsoft);
-  final_cost += ((util_cost)/(double)m)/(double)(2000);
+  double final_cost_dropping = ((double)drophard*0.9 + (double)dropsoft*0.1)/(double)(c1+drophard+dropsoft);
+  double final_cost_dis = ((double)(sqrt_dis_hard + sqrt_dis_soft) / (double)(200.00 * ((double) sqrtf(2.00)))) /(double)(c1+drophard+dropsoft);
+  double final_cost_energy = ((util_cost)/(double)m)/(double)(2000);
+  
+  double final_cost = final_cost_dropping + final_cost_dis + final_cost_energy;
   
   cout<<"Final Cost = "<<final_cost<<"\n";
   
