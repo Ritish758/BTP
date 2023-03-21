@@ -248,7 +248,7 @@ return bestproc;
 int mx=2001;
 int batch=3;
 
-void schedule_greedy1(vector<Task>& tasks, int m){
+void schedule_greedy1(vector<Task>& tasks, int m, float l1, float l2){
 
 
  int t=0;
@@ -393,27 +393,30 @@ void schedule_greedy1(vector<Task>& tasks, int m){
  
  }
  
-  cout<<"Total Hard Task dropped - "<<drophard<<"\n";
-  cout<<"Total Soft Task dropped - "<<dropsoft<<"\n";
-  cout<<"Distance used by Hard Tasks - "<<eu_dis_hard<<"  "<<eusqrt_dis_hard<<"\n";
-  cout<<"Distance used by Soft Tasks - "<<eu_dis_soft<<"  "<<eusqrt_dis_soft<<"\n";
-  cout<<"Utilisation Cost - "<<fixed<<setprecision(5)<<util_cost<<"\n";
-  cout<<"Number of completed Tasks - "<<c1<<"\n";
+//   cout<<"Total Hard Task dropped - "<<drophard<<"\n";
+//   cout<<"Total Soft Task dropped - "<<dropsoft<<"\n";
+//   cout<<"Distance used by Hard Tasks - "<<eu_dis_hard<<"  "<<eusqrt_dis_hard<<"\n";
+//   cout<<"Distance used by Soft Tasks - "<<eu_dis_soft<<"  "<<eusqrt_dis_soft<<"\n";
+//   cout<<"Utilisation Cost - "<<fixed<<setprecision(5)<<util_cost<<"\n";
+//   cout<<"Number of completed Tasks - "<<c1<<"\n";
   
-  cout<<"\n\n\n";
+//   cout<<"\n\n\n";
   
   
   double final_cost_drop = ((double)drophard*0.9 + (double)dropsoft*0.1)/(double)(c1+drophard+dropsoft);
   double final_cost_dis = ((double)(eusqrt_dis_hard + eusqrt_dis_soft) / (double)(200.00 * (double)(sqrtf(2.00)))) /(double)(c1+drophard+dropsoft);
   double final_cost_energy = ((util_cost)/(double)m)/(double)(2000);
   
-  cout<<"Cost of dropping - "<<final_cost_drop<<"\n";
-  cout<<"Cost of distance - "<<final_cost_dis<<"\n";
-  cout<<"Cost of energy - "<<final_cost_energy<<"\n";
+//   cout<<"Cost of dropping - "<<final_cost_drop<<"\n";
+//   cout<<"Cost of distance - "<<final_cost_dis<<"\n";
+//   cout<<"Cost of energy - "<<final_cost_energy<<"\n";
   
-  double final_cost = final_cost_drop + final_cost_dis + final_cost_energy;
+
+  double l3 = (double)1 - (double)(l1 + l2);
+  double final_cost = l1*final_cost_drop + l2*final_cost_dis + l3*final_cost_energy;
   
-  cout<<"Final Cost = "<<final_cost<<"\n";
+//   cout<<"Final Cost = "<<final_cost<<"\n";
+  cout<<final_cost<<",";
 
 }
 
@@ -431,8 +434,19 @@ int main(int argc, char* argv[]){
    }
    
    string filename=argv[1];
+ 
+   double l1 = (double)1/(double)(3.0);
+   double l2 = (double)1/(double)(3.0);
    if(argc>=3){dis_hop = stoi(argv[2]);}
    if(argc>= 4){max_util = stof(argv[3]);}
+   if(argc >= 5){
+      l1 = stof(argv[4]);
+   }
+   if(argc >= 6){
+      l2 = stof(argv[5]);
+   }
+   
+   
    vector<Task> tasks;
    
    ifstream fin;
@@ -455,9 +469,8 @@ int main(int argc, char* argv[]){
       Task t(x[0],x[2],x[1],x[6],x[3],x[4],x[5]);
       tasks.push_back(t);
    }
-   
-   schedule_greedy1(tasks,m);
-   
+  //  cout<<dis_hop<<" ";
+   schedule_greedy1(tasks,m, l1, l2);
    return 0;
 
 }
