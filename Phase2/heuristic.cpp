@@ -416,8 +416,8 @@ void schedule_greedy1(vector<Task>& tasks, int m, float l1, float l2){
   double final_cost = l1*final_cost_drop + l2*final_cost_dis + l3*final_cost_energy;
   
 //   cout<<"Final Cost = "<<final_cost<<"\n";
-  cout<<final_cost<<",";
-
+  // cout<<final_cost<<",";
+  cout<<final_cost_drop<<","<<final_cost_dis<<","<<final_cost_energy<<"\n";
 }
 
 
