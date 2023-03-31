@@ -385,28 +385,29 @@ void schedule_greedy1(vector<Task>& tasks, int m){
  
  }
  
-  cout<<"Total Hard Task dropped - "<<drophard<<"\n";
-  cout<<"Total Soft Task dropped - "<<dropsoft<<"\n";
-  cout<<"Distance used by Hard Tasks - "<<eu_dis_hard<<"  "<<eusqrt_dis_hard<<"\n";
-  cout<<"Distance used by Soft Tasks - "<<eu_dis_soft<<"  "<<eusqrt_dis_soft<<"\n";
-  cout<<"Utilisation Cost - "<<fixed<<setprecision(5)<<util_cost<<"\n";
-  cout<<"Number of completed Tasks - "<<c1<<"\n";
+//   cout<<"Total Hard Task dropped - "<<drophard<<"\n";
+//   cout<<"Total Soft Task dropped - "<<dropsoft<<"\n";
+//   cout<<"Distance used by Hard Tasks - "<<eu_dis_hard<<"  "<<eusqrt_dis_hard<<"\n";
+//   cout<<"Distance used by Soft Tasks - "<<eu_dis_soft<<"  "<<eusqrt_dis_soft<<"\n";
+//   cout<<"Utilisation Cost - "<<fixed<<setprecision(5)<<util_cost<<"\n";
+//   cout<<"Number of completed Tasks - "<<c1<<"\n";
   
-  cout<<"\n\n\n";
+//   cout<<"\n\n\n";
   
   
   double final_cost_drop = ((double)drophard*0.9 + (double)dropsoft*0.1)/(double)(c1+drophard+dropsoft);
   double final_cost_dis = ((double)(eusqrt_dis_hard + eusqrt_dis_soft) / (double)(200.00 * (double)(sqrtf(2.00)))) /(double)(c1+drophard+dropsoft);
   double final_cost_energy = ((util_cost)/(double)m)/(double)(2000);
   
-  cout<<"Cost of dropping - "<<final_cost_drop<<"\n";
-  cout<<"Cost of distance - "<<final_cost_dis<<"\n";
-  cout<<"Cost of energy - "<<final_cost_energy<<"\n";
+//   cout<<"Cost of dropping - "<<final_cost_drop<<"\n";
+//   cout<<"Cost of distance - "<<final_cost_dis<<"\n";
+//   cout<<"Cost of energy - "<<final_cost_energy<<"\n";
   
   double final_cost = (final_cost_drop + final_cost_dis + final_cost_energy)/(3.000);
   
-  cout<<"Final Cost = "<<final_cost<<"\n";
+//   cout<<"Final Cost = "<<final_cost<<"\n";
 
+   cout<<final_cost_drop<<","<<final_cost_dis<<","<<final_cost_energy<<"\n";      
 }
 
 
